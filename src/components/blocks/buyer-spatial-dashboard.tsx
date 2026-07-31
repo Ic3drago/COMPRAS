@@ -125,6 +125,17 @@ export const BuyerSpatialDashboard = ({ initialProducts }: { initialProducts: Pr
         <button type="submit">Logout</button>
       </form>
 
+      {/* Floating Logout Button for Buyer */}
+      <form action={logout} className="fixed top-6 right-6 z-50">
+        <button 
+          type="submit"
+          className="flex items-center gap-2 bg-black/60 backdrop-blur-xl border border-white/10 px-4 py-2.5 rounded-2xl text-xs font-semibold text-white/70 hover:text-rose-400 hover:border-rose-500/40 hover:bg-rose-950/30 transition-all shadow-xl"
+        >
+          <span>Cerrar sesión</span>
+        </button>
+      </form>
+
+
       {/* ====================================================================
           SECTION 1 — HERO: Full-screen Spline 3D Landing
        ==================================================================== */}

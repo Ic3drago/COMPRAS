@@ -40,8 +40,18 @@ export async function login(state: { error: string }, formData: FormData) {
 
 export async function logout() {
   const cookieStore = await cookies();
-  cookieStore.delete('sivm_auth_session');
-  cookieStore.delete('sivm_role');
+  cookieStore.delete({ name: 'sivm_auth_session', path: '/' });
+  cookieStore.delete({ name: 'sivm_role', path: '/' });
+  cookieStore.set('sivm_auth_session', '', {
+    path: '/',
+    maxAge: 0,
+    expires: new Date(0),
+  });
+  cookieStore.set('sivm_role', '', {
+    path: '/',
+    maxAge: 0,
+    expires: new Date(0),
+  });
   redirect('/login');
 }
 

@@ -44,7 +44,7 @@ export const AdminBentoDashboard = ({ initialProducts, initialSales }: { initial
           </div>
           
           <form action={logout} className="mt-8">
-            <Button variant="outline" className={cn("w-full justify-start gap-2 h-12 rounded-xl transition-colors", isDark ? "border-zinc-800 text-zinc-300 hover:text-rose-400 hover:bg-rose-950/30" : "text-zinc-600 hover:text-red-600 hover:bg-red-50 border-zinc-200")}>
+            <Button type="submit" variant="outline" className={cn("w-full justify-start gap-2 h-12 rounded-xl transition-colors", isDark ? "border-zinc-800 text-zinc-300 hover:text-rose-400 hover:bg-rose-950/30" : "text-zinc-600 hover:text-red-600 hover:bg-red-50 border-zinc-200")}>
               <LogOut className="h-4 w-4" /> Cerrar sesión
             </Button>
           </form>
