@@ -79,28 +79,60 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isInitialized, setIsInitialized] = useState(false);
 
   const fetchJson = async (url: string, options?: RequestInit) => {
-    const response = await fetch(url, { ...options, cache: 'no-store' });
-    const payload = await response.json().catch(() => null);
-    if (!response.ok) {
-      throw new Error(payload?.error || 'Error al consultar la API');
+    try {
+      const response = await fetch(url, { ...options, cache: 'no-store' });
+      const text = await response.text().catch(() => '');
+      let payload: any = null;
+      try {
+        payload = text ? JSON.parse(text) : null;
+      } catch {
+        payload = null;
+      }
+
+      if (!response.ok) {
+        const errorMsg = payload?.error || payload?.message || `HTTP ${response.status}: ${response.statusText || 'Error al consultar la API'}`;
+        throw new Error(errorMsg);
+      }
+      return payload;
+    } catch (err: any) {
+      console.warn(`Error al consultar ${url}:`, err?.message || err);
+      throw err;
     }
-    return payload;
   };
 
   useEffect(() => {
     const loadRemoteData = async () => {
       try {
-        const [productsData, salesData, movementsData, shiftData] = await Promise.all([
+        const [productsRes, salesRes, movementsRes, shiftRes] = await Promise.allSettled([
           fetchJson('/api/products'),
           fetchJson('/api/sales'),
           fetchJson('/api/movements'),
           fetchJson('/api/shift')
         ]);
 
-        setProducts(productsData ?? INITIAL_PRODUCTS);
-        setSales(salesData ?? INITIAL_TRANSACTIONS);
-        setMovements(movementsData ?? INITIAL_MOVEMENTS);
-        setShift(shiftData ?? INITIAL_SHIFT);
+        if (productsRes.status === 'fulfilled' && Array.isArray(productsRes.value)) {
+          setProducts(productsRes.value);
+        } else {
+          setProducts(INITIAL_PRODUCTS);
+        }
+
+        if (salesRes.status === 'fulfilled' && Array.isArray(salesRes.value)) {
+          setSales(salesRes.value);
+        } else {
+          setSales(INITIAL_TRANSACTIONS);
+        }
+
+        if (movementsRes.status === 'fulfilled' && Array.isArray(movementsRes.value)) {
+          setMovements(movementsRes.value);
+        } else {
+          setMovements(INITIAL_MOVEMENTS);
+        }
+
+        if (shiftRes.status === 'fulfilled' && shiftRes.value) {
+          setShift(shiftRes.value);
+        } else {
+          setShift(INITIAL_SHIFT);
+        }
       } catch (error) {
         console.error('Error cargando datos remotos', error);
       } finally {

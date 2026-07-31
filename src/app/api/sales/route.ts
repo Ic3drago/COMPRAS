@@ -2,9 +2,14 @@ import { NextResponse } from 'next/server';
 import { pool, ensureSchema, calculateStatus, mapProductRows } from '@/lib/postgres';
 
 export async function GET() {
-  await ensureSchema();
-  const result = await pool.query('SELECT * FROM sales ORDER BY timestamp DESC');
-  return NextResponse.json(result.rows);
+  try {
+    await ensureSchema();
+    const result = await pool.query('SELECT * FROM sales ORDER BY timestamp DESC');
+    return NextResponse.json(result.rows);
+  } catch (error: any) {
+    console.error('Error fetching sales:', error);
+    return NextResponse.json({ error: error?.message || 'Error al obtener ventas' }, { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {

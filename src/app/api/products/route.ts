@@ -2,11 +2,16 @@ import { NextResponse } from 'next/server';
 import { pool, ensureSchema, calculateStatus, mapProductRows } from '@/lib/postgres';
 
 export async function GET() {
-  await ensureSchema();
-  const result = await pool.query(
-    `SELECT id, barcode, name, category, unit, cost_price, sale_price, stock, min_stock, status, image, updated_at FROM products ORDER BY updated_at DESC`
-  );
-  return NextResponse.json(mapProductRows(result.rows));
+  try {
+    await ensureSchema();
+    const result = await pool.query(
+      `SELECT id, barcode, name, category, unit, cost_price, sale_price, stock, min_stock, status, image, updated_at FROM products ORDER BY updated_at DESC`
+    );
+    return NextResponse.json(mapProductRows(result.rows));
+  } catch (error: any) {
+    console.error('Error fetching products:', error);
+    return NextResponse.json({ error: error?.message || 'Error al obtener productos' }, { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
